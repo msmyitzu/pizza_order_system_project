@@ -27,6 +27,7 @@ class AjaxController extends Controller
         //logger($request->all());
         $data = $this->getOrderData($request);
         Cart::create($data);
+
         $response = [
             'message' => 'Add To Cart Complete' ,
             'status' => 'success'
@@ -36,16 +37,17 @@ class AjaxController extends Controller
 
     //order
     public function order(Request $request){
-        //logger($request->all());
+       // logger($request->all());
         foreach($request->all() as $item){
             OrderList::create([
-                'user_id'=> $iem['user_id'],
+                'user_id'=> $item['user_id'],
                 'product_id' => $item['product_id'],
                 'qty' => $item['qty'] ,
                 'total' => $item['total'] ,
                 'order_code' => $item['order_code'] ,
             ]);
         }
+
         return response()->json([
             'status' => 'true' ,
             'message' => 'order Complete'

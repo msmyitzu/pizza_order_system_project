@@ -14,7 +14,7 @@
                 <div id="product-carousel" class="carousel slide mt-3" data-ride="carousel">
                     <div class="carousel-inner bg-light">
                         <div class="carousel-item active">
-                                <img class="w-100 h-100" src="{{ asset('storage/'.$pizza->image) }}" alt="Image">
+                                <img class="w-100 h-100" src="{{ asset('storage/'.$pizza->image) }}" alt="Image" style="height:250px;">
                             </div>
                         </div>
                     </div>
@@ -86,7 +86,7 @@
                     @foreach ($pizzaList as $p )
                     <div class="product-item bg-light">
                         <div class="product-img position-relative overflow-hidden">
-                            <img class="img-fluid w-100" src="{{asset('storage/'.$p->image)}}" alt="" style="height:250px;">
+                            <img class="img-fluid" src="{{asset('storage/'.$p->image)}}" alt="" style="height:250px;">
                             <div class="product-action">
                                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
                                 <a class="btn btn-outline-dark btn-square" href="{{ route('user#pizzaDetails',$p->id) }}"><i class="fa-solid fa-info"></i></a>
@@ -124,7 +124,7 @@
                 'pizzaId' : $('#pizzaId').val(),
                 'count' : $('#orderCount').val()
             };
-
+           // console.log($source);
             $.ajax({
         type : 'get' ,
         url : 'http://localhost:8000/user/ajax/addToCart' ,

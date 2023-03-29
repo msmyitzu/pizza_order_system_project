@@ -19,7 +19,7 @@
                     <tbody class="align-middle">
                        @foreach ($cartList as $c)
                        <tr>
-                        <td><img src="{{ asset('storage/'.$c->product_image) }}" class="img-thumbnail shadow-sm" alt="" style="width: 50px;"></td>
+                        <td><img src="{{ asset('storage/'.$c->product_image) }}" class="img-thumbnail shadow-sm" alt="" style="width: 100px; height:100px"></td>
                         <td class="align-middle">
                             {{$c->pizza_name}}
                             <input type="hidden" class="productId" value="{{ $c->product_id }}">
@@ -81,28 +81,33 @@
 @section('scriptSource')
 <script src="{{ asset('js/cart.js') }}"></script>
 <script>
-$('orderBtn').click(function(){
+$('#orderBtn').click(function(){
+   // console.log("order.....");
     $orderList = [];
 
     $random = Math.floor(Math.random() * 100000000001);
-
+    //console.log($random);
     $("#dataTable tbody tr").each(function(index,row){
         $orderList.push({
             'user_id' : $(row).find('.userId').val(),
             'product_id' : $(row).find('.productId').val(),
             'qty' : $(row).find('#qty').val(),
-            'total' : $(row).find('#total').text().replace('kyats','')*1.
+            'total' : $(row).find('#total').text().replace('kyats','')*1 ,
             'order_code' : 'POS'+$random
         });
+        console.log($orderList);
     });
 
     $.ajax({
         type : 'get' ,
-        url :'http://localhost:8000/user/ajax/pizza/list',
+        url :'http://localhost:8000/user/ajax/order',
         data :Object.assign({},$orderList) ,
         dataType : 'json' ,
         success : function(response){
-            console.log(response);
+           // console.log(response);
+           if(rewponse.status == "true"){
+            window.location.href = "http://localhost:8000/user/homePage";
+           }
         }
     })
 })
