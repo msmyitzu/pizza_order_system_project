@@ -38,7 +38,7 @@
                                                 <img src="{{ asset('image/female_default.png') }}" class="img-thumbnail shadow-sm" >
                                             @endif
                                         @else
-                                            <img src="{{ asset('storage/'.Auth::user()->image)}}" />
+                                            <img src="{{ asset('storage/'.Auth::user()->image)}}" class="img-thumbnail shadow-sm" />
                                         @endif
                                     </div>
                                     <div class="col-5 offset-1">

@@ -11,24 +11,6 @@
                 <div class="container-fluid">
                     <div class="col-md-12">
                         <!-- DATA TABLE -->
-                        <div class="table-data__tool">
-                            <div class="table-data__tool-left">
-                                <div class="overview-wrap">
-                                    <h2 class="title-1">Admin List</h2>
-
-                                </div>
-                            </div>
-                            <div class="table-data__tool-right">
-                                <a href="{{ route('category#createPage') }}">
-                                    <button class="au-btn au-btn-icon au-btn--green au-btn--small">
-                                        <i class="zmdi zmdi-plus"></i>Add Category
-                                    </button>
-                                </a>
-                                <button class="au-btn au-btn-icon au-btn--green au-btn--small">
-                                    CSV download
-                                </button>
-                            </div>
-                        </div>
 
                        @if(session('deleteSuccess'))
                        <div class="col-4 offset-8">
@@ -90,26 +72,34 @@
                                             <img src="{{ asset('storage/'.$a->image) }}" class="img_thumbnail shadow-sm">
                                             @endif
                                         </td>
+                                        <input type="hidden" id="adminId" value="{{Auth::user()->id }}">
                                         <td>{{ $a->name }}</td>
                                         <td>{{ $a->email }}</td>
                                         <td>{{ $a->gender }}</td>
                                         <td>{{ $a->phone }}</td>
                                         <td>{{ $a->address }}</td>
                                         <td>
-                                            <div class="table-data-feature">
+                                            <div class="d-flex">
+                                                {{-- table-data-feature --}}
                                                @if (Auth::user()->id == $a->id)
 
                                                @else
-                                               <a href="{{ route('admin#changeRole',$a->id) }}">
-                                                    <button class="item" data-toggle="tooltip" data-placement="top" title="Change Admin Role">
-                                                        <i class="fa-solid fa-person-circle-question fs-4"></i>
-                                                    </button>
-                                                </a>
+
+                                                {{-- href="{{ route('admin#changeRole',$a->id) }}" --}}
+                                                    {{-- <button class="item" data-toggle="tooltip" data-placement="top" title="Change Admin Role"> --}}
+                                                        {{-- <i class="fa-solid fa-person-circle-question fs-4 text-dark"></i> --}}
+                                                    {{-- </button> --}}
+
+                                                    <select class="form-control statusChange text-center px-5 me-1">
+                                                        <option value="admin" @if(Auth::user()->role == 'admin') selected @endif>Admin</option>
+                                                        <option value="user" @if(Auth::user()->role == 'user') selected @endif>User</option>
+                                                    </select>
+
                                                <a href="{{ route('admin#delete',$a->id) }}">
-                                                    <button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
+                                                    <button class="item text-center" data-toggle="tooltip" data-placement="top" title="Delete">
                                                         <i class="zmdi zmdi-delete fs-4"></i>
                                                     </button>
-                                                </a>
+                                                </div>
                                                @endif
                                             </div>
                                         </td>
@@ -131,5 +121,42 @@
             </div>
         </div>
         <!-- END MAIN CONTENT-->
+
+@endsection
+
+@section('scriptSource')
+
+<script>
+
+$(document).ready(function(){
+
+      //change role
+      $('.statusChange').change(function(){
+            $currentStatus = $(this).val();       //ajs-1 console.log($currentStatus); //to know is this change sth
+            $parentNode = $(this).parents("tr");
+            $adminId = $parentNode.find('#adminId').val();
+            //console.log($adminId);
+            $data = {
+                'adminId' : $adminId ,
+                'role'  : $currentStatus
+
+            };
+
+            console.log($data);
+
+            // $.ajax({
+            //     type :'get',
+            //     url : 'http://localhost:8000/admin/changeRole',
+            //     data : $data,
+            //     dataType :'json'
+            // })
+
+            //location.reload();      // when roles are changed ,page is reload
+
+})
+
+})
+</script>
+
 
 @endsection

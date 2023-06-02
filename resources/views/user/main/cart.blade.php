@@ -8,7 +8,7 @@
                 <table class="table table-light table-borderless table-hover text-center mb-0" id="dataTable">
                     <thead class="thead-dark">
                         <tr>
-                            <th></th>
+                            <th>Image</th>
                             <th>Products</th>
                             <th>Price</th>
                             <th>Quantity</th>
@@ -22,6 +22,7 @@
                         <td><img src="{{ asset('storage/'.$c->product_image) }}" class="img-thumbnail shadow-sm" alt="" style="width: 100px; height:100px"></td>
                         <td class="align-middle">
                             {{$c->pizza_name}}
+                            <input type="hidden" class="orderId" value="{{ $c->id }}">
                             <input type="hidden" class="productId" value="{{ $c->product_id }}">
                             <input type="hidden" class="userId" value="{{ $c->user_id }}">
                         </td>
@@ -41,7 +42,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="align-middle col-3" id="total">{{ $c->pizza_price*$c->qty}} Kyats</td>
+                        <td class="align-middle col-3" id="total">{{$c->pizza_price*$c->qty}} Kyats</td>
                         <td class="align-middle"><button class="btn btn-sm btn-danger btnRemove"><i class="fa fa-times"></i></button></td>
                     </tr>
                        @endforeach
@@ -49,7 +50,7 @@
                 </table>
             </div>
             <div class="col-lg-4">
-                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Cart Summary</span></h5>
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="pr-3">Cart Summary</span></h5>
                 <div class="bg-light p-30 mb-5">
                     <div class="border-bottom pb-2">
                         <div class="d-flex justify-content-between mb-3">
@@ -69,6 +70,10 @@
                         <button class="btn btn-block btn-primary font-weight-bold my-3 py-3" id="orderBtn">
                             <span class="text-white">Proceed To Checkout</span>
                         </button>
+
+                        <button class="btn btn-block btn-danger font-weight-bold my-3 py-3" id="clearBtn">
+                            <span class="text-white">Clear Cart</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -87,29 +92,66 @@ $('#orderBtn').click(function(){
 
     $random = Math.floor(Math.random() * 100000000001);
     //console.log($random);
-    $("#dataTable tbody tr").each(function(index,row){
+    $('#dataTable tbody tr').each(function(index,row){
         $orderList.push({
             'user_id' : $(row).find('.userId').val(),
             'product_id' : $(row).find('.productId').val(),
             'qty' : $(row).find('#qty').val(),
-            'total' : $(row).find('#total').text().replace('kyats','')*1 ,
+            'total' : $(row).find('#total').text().replace('Kyats','')*1 ,
             'order_code' : 'POS'+$random
         });
-        console.log($orderList);
     });
 
     $.ajax({
         type : 'get' ,
         url :'http://localhost:8000/user/ajax/order',
-        data :Object.assign({},$orderList) ,
+        data :Object.assign({}, $orderList) ,
         dataType : 'json' ,
         success : function(response){
            // console.log(response);
-           if(rewponse.status == "true"){
+           if(response.status == "true"){
             window.location.href = "http://localhost:8000/user/homePage";
            }
         }
     })
 })
+//when clear button click
+$('#clearBtn').click(function(){
+    $('#dataTable tbody tr').remove();
+    $('#subTotalPrice').html('0 Kyats');
+    $('#finalPrice').html("3000 Kyats");
+
+    $.ajax({
+        type : 'get' ,
+        url : 'http://localhost:8000/user/ajax/clear/cart' ,
+        dataType : 'json' ,
+    })
+})
+//remove current product when cross button click
+$('.btnRemove').click(function() {
+        $parentNode = $(this).parents("tr");
+        $productId = $parentNode.find('.productId').val();
+        $orderId = $parentNode.find('.orderId').val();
+
+        $.ajax({
+            type : 'get' ,
+            url : 'http://localhost:8000/user/ajax/clear/current/product' ,
+            data : {'productId' : $productId , 'orderId' : $orderId} ,
+            dataType : 'json' ,
+
+        })
+
+        $parentNode.remove();
+
+        $totalPrice = 0;
+        $('#dataTable tbody tr').each(function(index, row) {
+            $totalPrice += Number($(row).find('#total').text().replace("Kyats", ""));
+        });
+
+        $("#subTotalPrice").html(`${$totalPrice} Kyats`);
+        $("#finalPrice").html(`${$totalPrice+3000} Kyats`);
+    })
+
+
 </script>
 @endsection

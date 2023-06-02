@@ -101,11 +101,16 @@ public function list(){
        return back()->with(['deleteSuccess'=>'Admin Account Deleted....']);
     }
 
-    //change role
-    public function changeRole($id){
-        $account = User::where('id',$id)->first();
-        return view('admin.account.changeRole',compact('account'));
+    //change admin role
+    public function changeRole($id,Request $request){
+        //logger($request->all());
+        $updateSource = [
+            'role' => $request->role
+        ];
+        User::where('id',$request->adminId)->update($updateSource);
     }
+
+
 
     //change
     public function change($id,Request $request){

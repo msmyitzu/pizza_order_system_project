@@ -6,6 +6,7 @@ use Storage;
 use Carbon\Carbon;
 use App\Models\Cart;
 use App\Models\User;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -21,7 +22,24 @@ class UserController extends Controller
         $pizza = Product::orderBy('created_at','desc')->get();
         $category = Category::get();
         $cart = Cart::where('user_id',Auth::user()->id)->get();
-        return view('user.main.home',compact('pizza','category','cart'));
+        $history = Order::where('user_id',Auth::user()->id)->get();
+        return view('user.main.home',compact('pizza','category','cart','history'));
+    }
+
+     //direct user list page
+
+     public function userList(){
+        $users = User::where('role','user')->paginate(3);
+        return view('admin.user.list',compact('users'));
+    }
+
+    //change user role
+    public function userChangeRole(Request $request){
+        //logger($request->all());
+        $updateSource = [
+            'role' => $request->role
+        ];
+        User::where('id',$request->userId)->update($updateSource);
     }
 
     //change password page
@@ -62,7 +80,8 @@ class UserController extends Controller
         //dd($category->toArray());
         //dd(count($category));
         $cart = Cart::where('user_id',Auth::user()->id)->get();
-        return view('user.main.home',compact('pizza','category','cart'));
+        $history = Order::where('user_id',Auth::user()->id)->get();
+        return view('user.main.home',compact('pizza','category','cart','history'));
     }
 
     //user account change
@@ -102,7 +121,7 @@ public function pizzaDetails($pizzaId){
                     ->leftJoin('products','products.id','carts.product_id')
                     ->where('carts.user_id',Auth::user()->id)
                     ->get();
-        // dd($cartList->toArray());
+         //dd($cartList->toArray());
         $totalPrice = 0;
 
         foreach ($cartList as $c) {
@@ -125,6 +144,11 @@ private function getUserData($request){
     ];
 }
 
+//direct history Page
+public function history(){
+    $order = Order::where('user_id',Auth::user()->id)->orderBy('created_at','desc')->paginate('6');
+    return view('user.main.history',compact('order'));
+}
 
 //account validation check
 private function accountValidationCheck($request){

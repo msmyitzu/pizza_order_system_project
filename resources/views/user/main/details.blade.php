@@ -6,7 +6,6 @@
     <div class="container-fluid pb-5">
         <div class="row px-xl-5">
             <div class="col-lg-5 mb-30">
-
                 <a href="{{ route('user#home') }}" class="nav-link">
                     <i class="fa-solid fa-arrow-left me-1"></i> back
                 </a>
@@ -15,10 +14,10 @@
                     <div class="carousel-inner bg-light">
                         <div class="carousel-item active">
                                 <img class="w-100 h-100" src="{{ asset('storage/'.$pizza->image) }}" alt="Image" style="height:250px;">
-                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
             <div class="col-lg-7 h-auto mb-30 mt-3">
                 <div class="h-100 bg-light p-30">
                     <h3>{{ $pizza->name }}</h3>
@@ -32,7 +31,7 @@
                                 <small class="fas fa-star-half-alt"></small>
                                 <small class="far fa-star"></small>
                             </div> --}}
-                            <small class="pt-1">{{ $pizza->view_count }} <i class="fa-solid fa-eye"></i> </small>
+                            <small class="pt-1"><i class="fa-solid fa-eye"></i> {{ $pizza->view_count + 1 }} </small>
                         </div>
                         <h3 class="font-weight-semi-bold mb-4">{{ $pizza->price }} Kyats</h3>
                         <p class="mb-4">{{ $pizza->description }}</p>
@@ -117,6 +116,19 @@
 @section('scriptSource')
 <script>
     $(document).ready(function(){
+
+        //console.log($('#pizzaId').val());     //to know pizza id
+        //increase view count
+
+        $.ajax({
+        type : 'get' ,
+        url : 'http://localhost:8000/user/ajax/increase/viewCount' ,
+        data : { 'productId' : $('#pizzaId').val() },
+        dataType : 'json',
+
+    })
+
+        //click add to cart btn
         $('#addCartBtn').click(function(){
 
             $source = {
